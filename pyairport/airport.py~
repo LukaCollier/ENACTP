@@ -221,12 +221,7 @@ class Airport:
         self.taxiways = taxiways
         self.runways = runways
         self.pt_dict = {pt.name : pt for pt in self.points}
-        self.qfu_dict = {}
-        for qf in self.runways:
-            self.qfu_dict[qf.qfus[0]]= qf
-            self.qfu_dict[qf.qfus[1]]= qf
-            
-                         
+        self.qfu_dict = {qf.name : qf for qf in self.runways}
         
     def __repr__(self):
         """Representation of the airport.
@@ -248,9 +243,13 @@ class Airport:
             if name == rwy.qfus[0] or name == rwy.qfus[1]:
                 return name
     def get_point(self,name):
-         return self.pt_dict[name]
+         a=apt.pt_dict.get(name,42)
+         if a !=42:
+             return a
     def get_runway(self,name):
-        return self.qfu_dict[name]
+        a=apt.qfu_dict.get(name,42)
+        if a !=42:
+            return a
 
 # Reading an airport file
 def from_file(filename):
@@ -310,7 +309,7 @@ def get_point(apt, name):
         if point.name == name:
             return point
 '''
-'''
+
 def get_point(apt, name):
     """Get a point from its name on the airport.
 
@@ -329,7 +328,6 @@ def get_point(apt, name):
         return a
 
 '''
-'''
 def get_runway(apt, name):
     """Get a runway from a given QFU.
 
@@ -347,7 +345,7 @@ def get_runway(apt, name):
         if name == rwy.qfus[0] or name == rwy.qfus[1]:
             return rwy
 '''
-'''
+
 def get_runway(apt, name):
     """Get a runway from a given QFU.
 
@@ -364,4 +362,4 @@ def get_runway(apt, name):
     a=apt.qfu_dict.get(name,42)
     if a !=42:
         return a
-'''
+

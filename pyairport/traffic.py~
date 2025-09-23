@@ -17,7 +17,7 @@ SEP = 70
 ## Runway area width (meters)
 RWY_SEP = 90
 
-                                                                         
+
 class Movement(Enum):
     """Type of movement, either departure or arrival.
 
@@ -138,38 +138,6 @@ def from_file2(apt, filename):
             flights.append(flight)
         return flights
 
-def from_file3(apt, filename):
-    """Parse a traffic file to extract flight plan information.
-
-    Args:
-        apt:  (airport.Airport)  the airport
-        filename:  (str)  the name of the file containing the flight plans
-
-    Returns:
-        The flight plans (traffic.Flight list) that have successfully been parsed.
-    """
-    print(f"Loading traffic: {filename}...")
-    with open(filename) as file:
-        flights = []
-        for line in file:
-            words = line.strip().split()
-            movement_type = movement_from_string(words[0])
-            callsign = words[1]
-            category = airport.category_from_string(words[2])
-            flight = Flight(callsign, movement_type, category)
-            flight.stand = airport.get_point(apt,words[3])
-            flight.qfu = apt.get_qfu(words[4])
-            flight.runway =airport.get_runway(apt, flight.qfu)
-            flight.rwy_t = timestep.of_seconds(int(words[6]))
-            flight.slot = None if words[7] == "_" else timestep.of_seconds(int(words[7]))
-            flight.route = geometry.points_from_strings(words[8:])
-            flight.start_t = timestep.of_seconds(int(words[5]))
-            flight.end_t = flight.start_t + len(flight.route)
-            flights.append(flight)
-        dep=[1 for f in flights if f.type is Movement.DEP]
-        arr=[1 for f in flights if f.type is Movement.ARR]
-        print(f"{sum(dep)} - dep {sum(arr)} - arr")
-        return flights
 def from_file(apt, filename):
     """Parse a traffic file to extract flight plan information.
 
@@ -189,9 +157,9 @@ def from_file(apt, filename):
             callsign = words[1]
             category = airport.category_from_string(words[2])
             flight = Flight(callsign, movement_type, category)
-            flight.stand = apt.get_point(words[3])
+            flight.stand = airport.get_point(apt, words[3])
             flight.qfu = apt.get_qfu(words[4])
-            flight.runway =apt.get_runway(flight.qfu)
+            flight.runway = airport.get_runway(apt, flight.qfu)
             flight.rwy_t = timestep.of_seconds(int(words[6]))
             flight.slot = None if words[7] == "_" else timestep.of_seconds(int(words[7]))
             flight.route = geometry.points_from_strings(words[8:])
