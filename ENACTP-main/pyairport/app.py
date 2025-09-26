@@ -1,0 +1,107 @@
+##@namespace app
+"""
+Main module for the Python Airport Simulation
+"""
+
+import os
+import os.path
+import sys
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QDockWidget, QMainWindow
+
+import airport
+import traffic
+from radar_view import RadarView
+from simulation import Simulation
+
+## Data root directory
+DATA_ROOT = "DATA"
+## Airport to simulate (sub-directory of DATA_ROOT)
+APT = "LFPG"
+## Name of the airport description files
+APT_FILE = "map.txt"
+## Name of the traffic files
+PLN_FILE = "flights.txt"
+
+def choix_arp():
+    try:
+        n=int(input("[1: CDG] / 2: Orly ? "))
+        if n<1 or n>2:
+            return 1
+        return n
+    except ValueError:
+        return 1
+def main():
+    """Main function."""
+    # Load files
+    n=choix_arp()
+    if n==1:
+        APT="LFPG"
+    else:
+        APT="LFPO"
+    data_dir = os.path.join(DATA_ROOT, APT)
+    apt_file = os.path.join(data_dir, APT_FILE)
+    pln_file = os.path.join(data_dir, PLN_FILE)
+
+    ## Airport for the simulation
+    apt = airport.from_file(apt_file)
+
+    ## Traffic considered for simulation
+    flights = traffic.from_file(apt, pln_file)
+
+    # Create the simulation
+    ## Initial simulation state
+    sim = Simulation(apt, flights)
+
+    # Initialize Qt
+    ## Main application
+    app = QApplication(sys.argv)
+
+    # Create the radar view and the time navigation interface
+    rad = RadarView(sim)
+    rad.move(10, 10)
+
+    # The radar view is the root widget of this QApplication, so it must be explicitly shown...
+    # rad.resize(1000, 600)
+    rad.show()             # either as a normal window...
+    # rad.showMaximized()  # ...or in full screen mode
+
+    # Enter the main loop
+    app.exec()
+
+def main2():
+    """Main function."""
+    # Load files
+    data_dir = os.path.join(DATA_ROOT, APT)
+    apt_file = os.path.join(data_dir, APT_FILE)
+    pln_file = os.path.join(data_dir, PLN_FILE)
+
+    ## Airport for the simulation
+    apt = airport.from_file(apt_file)
+
+    ## Traffic considered for simulation
+    flights = traffic.from_file(apt, pln_file)
+
+    # Create the simulation
+    ## Initial simulation state
+    sim = Simulation(apt, flights)
+
+    # Initialize Qt
+    ## Main application
+    app = QApplication(sys.argv)
+
+    # Create the radar view and the time navigation interface
+    rad = RadarView(sim)
+    rad.move(10, 10)
+
+    # The radar view is the root widget of this QApplication, so it must be explicitly shown...
+    # rad.resize(1000, 600)
+    rad.show()             # either as a normal window...
+    # rad.showMaximized()  # ...or in full screen mode
+
+    # Enter the main loop
+    app.exec()
+
+if __name__ == "__main__":
+    main()

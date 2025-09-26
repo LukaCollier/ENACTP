@@ -1,0 +1,13 @@
+def choix_arp():
+    try:
+        n=int(input("[1: CDG] / 2: Orly ? "))
+        if n<1 or n>2:
+            raise ValueError()
+    except TypeError():
+        n=1
+    except ValueError():
+        n=1
+
+
+
+choix_arp()
