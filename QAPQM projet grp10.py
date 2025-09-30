@@ -4,7 +4,7 @@ Mach=0.77
 Npax= 185
 Raction= 3250  #Nm
 Alt= 330 #FL330
-All =8.93 #random
+All =7.8 #dimension de l'allongement majoritairement utilisée dans l'aéronautique voir cours SA1
 Cs=14.1e-6
 Racm=6.019e6
 g=9.81
@@ -61,4 +61,5 @@ def trueM0(Mi0,R,g,Cs,V,f):
     return tmp
     
     
+
 #trueM0(100000,Racm,g,Cs,V,fin(All))
