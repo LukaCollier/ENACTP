@@ -5,7 +5,7 @@ Macmax=0.8085
 Npax= 185
 Raction= 3250  #Nm
 Alt= 330 #FL330
-All =7.8 #dimension de l'allongement majoritairement utilisée dans l'aéronautique voircours SA1
+All =9 #dimension de l'allongement majoritairement utilisée dans l'aéronautique voircours SA1
 AllA320 = 9.29
 Cs=14.1e-6
 Racm=6.019e6
@@ -144,4 +144,5 @@ def Diamf(lf,rap): #choix rapport 10.5
     return rap/lf
 
 def Xvoil(lf):
+
     return lf/3
