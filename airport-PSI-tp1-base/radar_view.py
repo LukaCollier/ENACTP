@@ -145,6 +145,12 @@ class RadarView(QWidget):
             self.time_manager.set_time_increment(val)
             lblvalue.setText(str(val))
         slide.valueChanged.connect(updspeed)
+        #alternative
+        #slide.valueChanged.connect(lambda value: value_lbl.setText(str(value)))
+        #ou en encore
+        #slide.valueChanged.connect(value_lbl.setNum)
+        
+        self.time_manager.time_increment_changed.connect(slide.setValue)
         return toolbar
 
     def create_airport_view(self):
