@@ -21,11 +21,11 @@ class File(Inode):
         return self.size
     def __repr__(self):
         return f'{super().full_path()}, {self.size} octets'
-'''
+
 f=File("cute_cat.jpg",1000000)
 print(f)
 print(f.get_size())
-'''
+
 
 class Directory(Inode):
     def __init__(self,name,path=''):
