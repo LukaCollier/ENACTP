@@ -1,0 +1,8 @@
+def listefile(filename):
+    res=[]
+    with open(filename,'r') as f:
+        for line in f:
+            line=line.strip()
+            Linfo=line.split()
+            res.append((Linfo[0],Linfo[5],Linfo[8:]))
+    return res
