@@ -168,50 +168,53 @@ C_EV_DEFAULT = 0.09
 
 def compute_empennages(M0, All, eff_wing, Fleche_deg,
                        c_EH=C_EH_DEFAULT, c_EV=C_EV_DEFAULT,
-                       use_tail_chord_equal_MAC=True):
+                       use_tail_chord_equal_MAC=True,
+                       tol=1e-3, max_iter=50):
     """
-    Retourne un dictionnaire contenant la géométrie de l'aile,
-    la position du 1/4 de CAM aile, la longueur du fuselage,
-    L_EH (bras entre 1/4 CAM aile et 1/4 CAM empennage),
-    et les surfaces S_EH et S_EV.
+    Calcule la géométrie de l'aile et des empennages en ajustant L_EH
+    pour que le bord de fuite de l'empennage horizontal soit positionné
+    exactement à l'extrémité arrière du fuselage.
+
     Hypothèses :
       - Sref = M0 / ChargeAllaire (comme dans envergure)
-      - empennage utilise la même "moyenne de corde" (MAC) que l'aile
-        si use_tail_chord_equal_MAC == True (approximation simple).
+      - L'empennage horizontal utilise la même MAC que l'aile
+        si use_tail_chord_equal_MAC == True
+      - La flèche et l'effilement sont ceux de l'aile (simplification)
     """
+
     # Surface de référence
     Sref = M0 / ChargeAllaire
 
-    # Envergure
-    b = envergure(M0, All)   # utilise ta fonction envergure
-
-    # Corde d'emplanture et MAC
+    # Géométrie de l'aile
+    b = envergure(M0, All)
     Cempl = CordeEmplanture(Sref, b, eff_wing)
     MAC = CordeAM(eff_wing, Cempl)
 
-    # position du 1/4 CAM aile (distance depuis le nez) :
-    # On estime d'abord la position longitudinale de la voilure (Xvoil)
-    lf = longueurf(M0)      # longueur du fuselage
-    x_voil = Xvoil(lf)      # position (approx) de la voilure depuis le nez
+    # Position de la voilure
+    lf = longueurf(M0)              # longueur totale du fuselage
+    x_voil = Xvoil(lf)              # position de la voilure depuis le nez
     ycam = YCam(b, eff_wing)
-    x_cam_rel = Xcam(ycam, Fleche_deg)  # décalage dû à la flèche
+    x_cam_rel = Xcam(ycam, Fleche_deg)
     x_wing_quarter = x_voil + x_cam_rel
 
-    # Positionner le 1/4 cote empennage de façon que le bord de fuite soit à l'arrière du fuselage
-    # On approxime la corde de l'empennage par MAC (optionnel)
-    MAC_tail = MAC if use_tail_chord_equal_MAC else MAC  # placeholder si tu veux changer
-    # On souhaite : x_tail_quarter + 0.25 * MAC_tail = lf  => x_tail_quarter = lf - 0.25*MAC_tail
-    x_tail_quarter = lf - 0.25 * MAC_tail
+    # Choix de la corde de l'empennage
+    MAC_tail = MAC if use_tail_chord_equal_MAC else MAC  # (placeholder)
 
-    # Bras de levier L_EH (distance entre 1/4 aile et 1/4 empennage)
-    L_EH = x_tail_quarter - x_wing_quarter
-    if L_EH <= 0:
-        raise ValueError("L_EH calculé <= 0 : vérifie les hypothèses (fuselage trop court ou positions).")
+    # Estimation initiale du bras de levier (40 % de la longueur du fuselage)
+    L_EH = 0.4 * lf
 
-    # Surfaces empennages selon coefficients de volume :
-    S_EH = (c_EH * Sref * MAC) / L_EH
-    S_EV = (c_EV * Sref * MAC) / L_EH   # souvent on prend le même bras de levier pour vertical; ajustable si besoin
+    # Boucle d'ajustement
+    for _ in range(max_iter):
+        S_EH = (c_EH * Sref * MAC) / L_EH
+        x_tail_quarter = x_wing_quarter + L_EH
+        x_bord_fuite = x_tail_quarter + 0.25 * MAC_tail
+        erreur = lf - x_bord_fuite
+        if abs(erreur) < tol:
+            break
+        L_EH += 0.5 * erreur 
+    S_EV = (c_EV * Sref * MAC) / L_EH
 
+    # Résultats finaux
     res = {
         "Sref": Sref,
         "b": b,
@@ -225,9 +228,17 @@ def compute_empennages(M0, All, eff_wing, Fleche_deg,
         "S_EH": S_EH,
         "S_EV": S_EV,
         "c_EH": c_EH,
-        "c_EV": c_EV
+        "c_EV": c_EV,
+        "iterations": _ + 1,
+        "erreur_finale": erreur
     }
+
+    # Vérification de cohérence
+    if L_EH <= 0:
+        raise ValueError("L_EH calculé <= 0 : vérifie les hypothèses (fuselage trop court ou positions).")
+
     return res
+
 
 # Fonction d'affichage pratique
 def print_empennage_report(res):
@@ -371,4 +382,5 @@ def main():
     return caract
 
 tab=main()
+
     
