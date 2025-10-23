@@ -1,0 +1,31 @@
+http://stackoverflow.com/questions/11790504/about-a-pyqt-example-program
+
+4.2.1. When Painting Occurs
+
+The paintEvent() method is called automatically when
+- Your widget is shown for the first time.
+- After a window has been moved to reveal some part (or all) of the widget.
+- The window in which the widget lies is restored after being minimized.
+- The window in which the widget lies is resized.
+- The user switches from another desktop to the desktop on which the widget's window lies.
+
+You can generate paint events manually by calling QWidget::update(). 
+QWidget::update() erases the widget before generating the paint event. 
+You can pass arguments to update(), which can restrict painting only to areas (rectangles, in particular) that need it. 
+The two equivalent forms of the method are QWidget::update (int x, int y, int width, int height) 
+and QWidget::update (QRect rectangle), where x and y give the upper-left corner of the rectangle, 
+and width and height are obvious. 
+Because update() places a paint event into the event queue, no painting occurs until the current method exits and control returns to the event handler. 
+This is a good thing because other events may be waiting there to be processed, and events need to be processed in a timely manner for the GUI to operate smoothly.
+
+You can also invoke painting of the widget by calling QWidget::repaint (int x, int y, int width, int height, bool erase) 
+(or one of several convenience-method forms), where all the arguments mean the same as in the case of the update() method, 
+and erase tells repaint whether to erase the rectangle before painting it. 
+repaint() calls paintEvent() directly. It does not place a paint event into the event queue, so use this method with care. 
+If you try to call repaint() repeatedly from a simple loop to create an animation, for example, 
+the animation will be drawn, but the rest of your user interface will be unresponsive 
+because the events corresponding to mouse button clicks, keyboard presses, and so on will be waiting in the queue. 
+Even if you are not performing a task as potentially time-consuming as animation, it is generally better to use update() to help keep your GUI alive.
+
+If you paint something on your widget outside the paintEvent(), you still need to include the logic and commands necessary to paint that same thing in paintEvent(). 
+Otherwise, the painting you did would disappear the next time the widget is updated.
