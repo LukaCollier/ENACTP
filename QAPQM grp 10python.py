@@ -264,11 +264,11 @@ Fleche_deg = Fleche
 
 #dimension moteur
 def LongeurMoteur(M0,rpp,macmax):
-    P=poussee(M0,rpp)
+    P=poussee(M0,rpp)/2
     return 0.49*(P**0.4)*macmax
 
 def diametreMoteur(M0,rpp,macmax,e):
-    P=poussee(M0,rpp)
+    P=poussee(M0,rpp)/2
     return 0.15*(P**0.5)*macmax*(exp(0.04*6)) #BPR=6
 
 def Diametrenacelle(Dmoteur):
@@ -384,3 +384,4 @@ def main():
 tab=main()
 
     
+
