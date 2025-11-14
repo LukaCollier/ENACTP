@@ -1,0 +1,49 @@
+import numpy as np
+
+
+# Matrices de rotation
+def rx(alpha): return np.identity(3) # QUESTION 4
+def ry(alpha): return np.identity(3) # QUESTION 4
+def rz(alpha): return np.identity(3) # QUESTION 4
+
+
+class Camera:
+
+    def __init__(self):
+        self.position = None # QUESTION 1
+        self.heading = 0  # Rotation par rapport a l'axe z
+        self.pitch = 0    # Rotation par rapport a l'axe y
+        self.roll = 0     # Rotation par rapport a l'axe x
+        self.zoom = 500   # Zoom - superieur a la demi-diagonale de l'ecran
+        self.matrix = None # QUESTION 2
+
+    def set_position(self, x, y, z):
+        """Sets the current position (in place) to coordinates x, y and z"""
+        pass # QUESTION 3
+
+    def update(self):
+        """Replaces the current matrix with the
+        Tait-Bryan rotation matrix using the following conventions:
+        - x-axis : roll
+        - y-axis : pitch
+        - z-axis : heading
+        """
+        pass # QUESTION 5
+
+    def look_at(self, xyz):
+        dx, dy, dz = xyz - self.position
+        self.heading = np.arctan2(dy, dx)
+        self.pitch = np.arctan2(-dz, np.sqrt(dy ** 2 + dx ** 2))
+
+    def direction(self):
+        return self.matrix[:, 0]
+
+    def change_basis(self, points):
+        """Change basis to camera-centered and camera-oriented"""
+        return points # QUESTION 6
+
+    def screen_projection(self, width, height, points):
+        """Project camera-based coordinates on screen"""
+        def proj(p): # projection d'un point
+            return np.zeros(2) # QUESTION 7
+        return [proj(p) for p in points]
