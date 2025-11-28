@@ -12,11 +12,11 @@ class UnionFind:
         
         if repi==repj:
             return False
-        if self.rank[repi]>self.rank[repj]:
+        if self.rang[repi]>self.rang[repj]:
             self.parent[repj]=repi
-        elif self.rank[repj]>self.rank[repi]:
+        elif self.rang[repj]>self.rang[repi]:
             self.parent[repi]=repj
         else:
             self.parent[repj]=repi
-            self.rank[repi]+=1
+            self.rang[repi]+=1
         return True
